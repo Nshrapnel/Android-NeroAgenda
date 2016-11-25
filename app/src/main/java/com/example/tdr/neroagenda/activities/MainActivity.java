@@ -154,7 +154,20 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                Toast.makeText(this, contacts.size() + " Contacts has been Exported",
+                int size = contacts.size();
+                String message;
+                switch (size) {
+                    case 0:
+                        message = "No Contacts have";
+                        break;
+                    case 1:
+                        message = "1 Contact has";
+                        break;
+                    default:
+                        message = size + " Contacts have";
+                        break;
+                }
+                Toast.makeText(this, contacts.size() + message + " been Exported.",
                         Toast.LENGTH_SHORT).show();
                 break;
         }
