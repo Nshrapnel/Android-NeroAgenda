@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Nero\'s PhoneBook</string>
+    <string name="export">Export contacts to External Storage</string>
+    <string name="bulk_filling">Fill Phonebook</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="contact_avatar">Contact Avatar</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="delete_contact">Delete Contact</string>
+    <string name="create">Save</string>
+    <string name="cancel">Cancel</string>
+
+</resources>
