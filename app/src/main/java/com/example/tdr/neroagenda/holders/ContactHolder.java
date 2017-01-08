@@ -1,6 +1,7 @@
 package com.example.tdr.neroagenda.holders;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -18,18 +19,18 @@ import com.example.tdr.neroagenda.adapters.ContactAdapter;
 import com.example.tdr.neroagenda.dao.ContentProviderDAO;
 import com.example.tdr.neroagenda.models.Contact;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class ContactHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
     private final TextView tvName, tvPhone, tvEmail;
     private Contact contact;
-    private List<Contact> contacts;
+    private ArrayList<Contact> contacts;
     private Context context;
     private ContactAdapter adapter;
     private ContentProviderDAO contentProviderDAO;
 
-    public ContactHolder(Context context, View itemView, List<Contact> contacts, ContactAdapter adapter) {
+    public ContactHolder(Context context, View itemView, ArrayList<Contact> contacts, ContactAdapter adapter) {
         super(itemView);
         this.context = context;
         this.tvName = (TextView) itemView.findViewById(R.id.tvName);
@@ -57,11 +58,11 @@ public class ContactHolder extends RecyclerView.ViewHolder implements View.OnCli
         intent.putExtra("email", contact.getmEmail());
         intent.putExtra("id", contact.getId());
         ((Activity) context).startActivityForResult(intent, 1);
-        Toast.makeText(context, "Editing " + this.contact.getmName(),
-                Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Editing " + this.contact.getmName(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
+    @SuppressLint("InflateParams")
     public boolean onLongClick(View v) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);

@@ -3,21 +3,20 @@ package com.example.tdr.neroagenda.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.example.tdr.neroagenda.R;
 import com.example.tdr.neroagenda.adapters.ContactAdapter;
 import com.example.tdr.neroagenda.dao.ContentProviderDAO;
-import com.example.tdr.neroagenda.decorators.ShadowVerticalSpaceItemDecorator;
-import com.example.tdr.neroagenda.decorators.VerticalSpaceItemDecorator;
+import com.example.tdr.neroagenda.fragments.ContactsList;
+import com.example.tdr.neroagenda.interfaces.OnListFragmentInteractionListener;
 import com.example.tdr.neroagenda.models.Contact;
 
 import java.io.BufferedReader;
@@ -26,11 +25,11 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnListFragmentInteractionListener {
 
-    private List<Contact> contacts;
+    private ArrayList<Contact> contacts;
     private ContactAdapter adapter;
     private ContentProviderDAO contentProviderDAO;
 
@@ -42,27 +41,34 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        adapter = new ContactAdapter(this, R.layout.phonebook_row, contacts);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        int verticalSpacing = 20;
-        VerticalSpaceItemDecorator itemDecorator =
-                new VerticalSpaceItemDecorator(verticalSpacing);
-        ShadowVerticalSpaceItemDecorator shadowItemDecorator =
-                new ShadowVerticalSpaceItemDecorator(this, R.drawable.drop_shadow);
-        RecyclerView phonebook = (RecyclerView) findViewById(R.id.listPhone);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), ContactInfo.class);
-                startActivityForResult(intent, 0);
-            }
-        });
-        phonebook.setHasFixedSize(true);
-        phonebook.setLayoutManager(layoutManager);
-        phonebook.addItemDecoration(shadowItemDecorator);
-        phonebook.addItemDecoration(itemDecorator);
-        phonebook.setAdapter(adapter);
+        Fragment fragment = ContactsList.newInstance(contacts);
+        FragmentManager FM = getSupportFragmentManager();
+        FragmentTransaction FT = FM.beginTransaction();
+        FT.add(R.id.content_main, fragment);
+        FT.commit();
+//        adapter = new ContactAdapter(this, R.layout.phonebook_row, contacts, this);
+//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+//        int verticalSpacing = 20;
+//        VerticalSpaceItemDecorator itemDecorator =
+//                new VerticalSpaceItemDecorator(verticalSpacing);
+//        ShadowVerticalSpaceItemDecorator shadowItemDecorator =
+//                new ShadowVerticalSpaceItemDecorator(this, R.drawable.drop_shadow);
+//        RecyclerView phonebook = (RecyclerView) findViewById(R.id.listPhone);
+
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(getApplicationContext(), ContactInfo.class);
+//                startActivityForResult(intent, 0);
+//            }
+//        });
+
+//        phonebook.setHasFixedSize(true);
+//        phonebook.setLayoutManager(layoutManager);
+//        phonebook.addItemDecoration(shadowItemDecorator);
+//        phonebook.addItemDecoration(itemDecorator);
+//        phonebook.setAdapter(adapter);
     }
 
     @Override
@@ -81,21 +87,16 @@ public class MainActivity extends AppCompatActivity {
                         data.getExtras().getString("number"),
                         data.getExtras().getString("email"),
                         data.getExtras().getLong("id"));
-                boolean found = false;
-                int i = 0;
-                while (i < contacts.size() && !found) {
-                    found = contacts.get(i).getId() == contact.getId();
-                    i++;
+                for (Contact c : contacts) {
+                    if (c.getId() == contact.getId()) {
+                        int i = contacts.indexOf(c);
+                        contacts.remove(i);
+                        contacts.add(i, contact);
+                    }
                 }
-                if (found) {
-                    i--;
-                    contacts.get(i).setmName(contact.getmName());
-                    contacts.get(i).setmPhone(contact.getmPhone());
-                    contacts.get(i).setmEmail(contact.getmEmail());
-                    contentProviderDAO.updateContact(contact);
-                    Toast.makeText(this, "Changes have been saved",
-                            Toast.LENGTH_SHORT).show();
-                }
+                contentProviderDAO.updateContact(contact);
+                Toast.makeText(this, "Changes have been saved",
+                        Toast.LENGTH_SHORT).show();
             }
         }
         adapter.notifyDataSetChanged();
@@ -154,20 +155,7 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                int size = contacts.size();
-                String message;
-                switch (size) {
-                    case 0:
-                        message = "No Contacts have";
-                        break;
-                    case 1:
-                        message = "1 Contact has";
-                        break;
-                    default:
-                        message = size + " Contacts have";
-                        break;
-                }
-                Toast.makeText(this, contacts.size() + message + " been Exported.",
+                Toast.makeText(this, contacts.size() + " Contacts has been Exported",
                         Toast.LENGTH_SHORT).show();
                 break;
         }
@@ -177,5 +165,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state);
+    }
+
+    @Override
+    public void onListFragmentInteraction(Contact contact) {
+
     }
 }

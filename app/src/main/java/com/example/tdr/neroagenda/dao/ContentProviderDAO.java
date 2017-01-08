@@ -15,9 +15,9 @@ import java.util.ArrayList;
 
 public class ContentProviderDAO {
 
-    private ContentResolver resolver;
     private final String AUTHORITY = "com.example.androidstudio.contactsprovider.providers/",
             contactUri = "content://" + AUTHORITY + "contacts/";
+    private ContentResolver resolver;
 
     public ContentProviderDAO(Context context) {
         resolver = context.getContentResolver();

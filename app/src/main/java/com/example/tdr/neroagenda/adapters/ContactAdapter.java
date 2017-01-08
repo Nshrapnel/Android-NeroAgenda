@@ -7,20 +7,24 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.tdr.neroagenda.holders.ContactHolder;
+import com.example.tdr.neroagenda.interfaces.OnListFragmentInteractionListener;
 import com.example.tdr.neroagenda.models.Contact;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactHolder> {
 
+    private final OnListFragmentInteractionListener mListener;
     private Context context;
-    private List<Contact> contacts;
+    private ArrayList<Contact> contacts;
     private int itemResource;
 
-    public ContactAdapter(Context context, int itemResource, List<Contact> contacts) {
+    public ContactAdapter(Context context, int itemResource, ArrayList<Contact> contacts,
+                          OnListFragmentInteractionListener listener) {
         this.context = context;
         this.contacts = contacts;
         this.itemResource = itemResource;
+        mListener = listener;
     }
 
     @Override
